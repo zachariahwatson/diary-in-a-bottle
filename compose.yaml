@@ -1,0 +1,65 @@
+services:
+  client:
+    build:
+      context: ./client
+    container_name: client
+    restart: unless-stopped
+    networks:
+      - app
+
+  server:
+    build:
+      context: ./server
+    container_name: server
+    restart: unless-stopped
+    networks:
+      - app
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres
+    container_name: db
+    restart: always
+    user: postgres
+    secrets:
+      - db-password
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
+    expose:
+      - 5432
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app
+
+  nginx:
+    build: ./nginx
+    container_name: nginx
+    #expose nginx to outside world - we don't do the same for the client or server because we don't want it accessible to the outside world
+    ports:
+      - 80:80
+    restart: unless-stopped
+    depends_on:
+      - client
+      - server
+    networks:
+      - app
+
+volumes:
+  db-data:
+
+secrets:
+  db-password:
+    file: db/password.txt
+
+networks:
+  app:
+    driver: bridge
