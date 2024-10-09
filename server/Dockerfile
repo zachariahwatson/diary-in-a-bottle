@@ -52,4 +52,6 @@ COPY --from=build /app .
 # and https://github.com/dotnet/dotnet-docker/discussions/4764
 USER $APP_UID
 
+ENV ASPNETCORE_ENVIRONMENT=Development
+
 ENTRYPOINT ["dotnet", "server.dll"]

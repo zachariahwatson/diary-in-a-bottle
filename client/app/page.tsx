@@ -1,7 +1,6 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
-import Image from "next/image"
 
 export default function Home() {
 	const { data, isLoading } = useQuery({
