@@ -1,16 +1,16 @@
 "use client"
 
 import { Button, SubmitButton } from "@/components/ui/buttons"
-import { Checkbox, Separator } from "@/components/ui"
+import { Checkbox, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Separator } from "@/components/ui"
 import { signUpFormSchema } from "@/lib/zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/forms"
 import { Input } from "@/components/ui/input"
-import { Dispatch, SetStateAction } from "react"
+import { Dispatch, SetStateAction, useState } from "react"
 import Link from "next/link"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { generateUserName } from "@/utils"
 import { toast } from "sonner"
 
@@ -24,10 +24,19 @@ type SignUpPayload = {
 }
 
 export function SignUpForm({ setFormType }: Props) {
+	const queryClient = useQueryClient()
+
+	const [delimiter, setDelimiter] = useState<string>("-")
+	const [userNameSeed, setUserNameSeed] = useState<{ adj1: number; adj2: number; noun: number }>({
+		adj1: Math.random(),
+		adj2: Math.random(),
+		noun: Math.random(),
+	})
+
 	const form = useForm<z.infer<typeof signUpFormSchema>>({
 		resolver: zodResolver(signUpFormSchema),
 		defaultValues: {
-			userName: generateUserName(),
+			userName: generateUserName(userNameSeed, delimiter),
 			password: "",
 			confirmPassword: "",
 			acceptTerms: false,
@@ -48,7 +57,19 @@ export function SignUpForm({ setFormType }: Props) {
 
 	const handleRegenerateUserName = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
 		e.preventDefault()
-		const newUserName = generateUserName()
+		const newUserNameSeed = {
+			adj1: Math.random(),
+			adj2: Math.random(),
+			noun: Math.random(),
+		}
+		setUserNameSeed(newUserNameSeed)
+		const newUserName = generateUserName(newUserNameSeed, delimiter)
+		form.setValue("userName", newUserName)
+	}
+
+	const handleDelimiter = (value: string) => {
+		setDelimiter(value)
+		const newUserName = generateUserName(userNameSeed, value)
 		form.setValue("userName", newUserName)
 	}
 
@@ -73,11 +94,8 @@ export function SignUpForm({ setFormType }: Props) {
 			console.error(error)
 			toast.error(error.message, { description: error.code })
 		},
-		// onSettled: () => {
-		// 	//setVisible(false)
-		// 	console.log("settled")
-		// },
 		onSuccess: (body: any) => {
+			queryClient.invalidateQueries({ queryKey: ["user"] })
 			toast.success(body.message)
 			form.reset()
 			handleFormChange()
@@ -101,6 +119,32 @@ export function SignUpForm({ setFormType }: Props) {
 									<FormControl>
 										<div className="flex flex-row space-x-2">
 											<Input {...field} readOnly disabled />
+											<Select onValueChange={handleDelimiter} defaultValue="-">
+												<SelectTrigger className="w-32">
+													<SelectValue placeholder="-" />
+												</SelectTrigger>
+												<SelectContent>
+													<SelectItem value="none">none</SelectItem>
+													<SelectItem value="-">-</SelectItem>
+													<SelectItem value="_">_</SelectItem>
+													<SelectItem value="+">+</SelectItem>
+													<SelectItem value=">">{">"}</SelectItem>
+													<SelectItem value="?">?</SelectItem>
+													<SelectItem value="/">/</SelectItem>
+													<SelectItem value="\">\</SelectItem>
+													<SelectItem value="|">|</SelectItem>
+													<SelectItem value=":">:</SelectItem>
+													<SelectItem value=";">;</SelectItem>
+													<SelectItem value="!">!</SelectItem>
+													<SelectItem value="@">@</SelectItem>
+													<SelectItem value="#">#</SelectItem>
+													<SelectItem value="$">$</SelectItem>
+													<SelectItem value="%">%</SelectItem>
+													<SelectItem value="^">^</SelectItem>
+													<SelectItem value="&">&</SelectItem>
+													<SelectItem value="*">*</SelectItem>
+												</SelectContent>
+											</Select>
 											<Button onClick={handleRegenerateUserName}>
 												<svg
 													xmlns="http://www.w3.org/2000/svg"
@@ -149,6 +193,25 @@ export function SignUpForm({ setFormType }: Props) {
 							)}
 						/>
 					</div>
+					<FormField
+						control={form.control}
+						name="acceptCredentialsSaved"
+						render={({ field }) => (
+							<FormItem>
+								<div className="flex flex-row items-start space-x-3 space-y-0">
+									<FormControl>
+										<Checkbox checked={field.value} onCheckedChange={field.onChange} />
+									</FormControl>
+									<FormLabel>credentials have been saved</FormLabel>
+								</div>
+								<FormDescription>
+									you acknowledge that we DO NOT support account recovery and that you have stored you username and
+									password in a safe place.
+								</FormDescription>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
 					<FormField
 						control={form.control}
 						name="acceptTerms"

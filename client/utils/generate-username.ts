@@ -1,15 +1,16 @@
-export function generateUserName(): string {
-	const adj1 = randomItem(adjectives)
-	let adj2 = randomItem(adjectives)
-	while (adj1 === adj2) {
-		adj2 = randomItem(adjectives)
-	}
-	const noun = randomItem(nouns)
-	return adj1 + "-" + adj2 + "-" + noun
+export function generateUserName(
+	userNameSeed: { adj1: number; adj2: number; noun: number },
+	delimiter: string
+): string {
+	const d = delimiter === "none" ? "" : delimiter
+	const adj1 = randomItem(adjectives, userNameSeed.adj1)
+	const adj2 = randomItem(adjectives, userNameSeed.adj2)
+	const noun = randomItem(nouns, userNameSeed.noun)
+	return adj1 + d + adj2 + d + noun
 }
 
-const randomItem = (array: Array<string>): string => {
-	return array[Math.floor(Math.random() * array.length)]
+const randomItem = (array: Array<string>, seed: number): string => {
+	return array[Math.floor(seed * array.length)]
 }
 
 const nouns = [
