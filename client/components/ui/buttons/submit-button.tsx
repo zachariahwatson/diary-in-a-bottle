@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/buttons"
 import { type ComponentProps } from "react"
-import { useFormStatus } from "react-dom"
 
 type Props = ComponentProps<typeof Button> & {
 	pending?: boolean
