@@ -40,8 +40,6 @@ export function SignInForm({ setFormType }: Props) {
 			password: values.password,
 		}
 		mutation.mutate(payload)
-		//await signIn(values)
-		//queryClient.invalidateQueries(["user"])
 	}
 
 	const handleFormChange = () => {
@@ -50,7 +48,7 @@ export function SignInForm({ setFormType }: Props) {
 
 	const mutation = useMutation({
 		mutationFn: async (data: SignInPayload) => {
-			const url = new URL(`${process.env.NEXT_PUBLIC_URL}/api/login`)
+			const url = new URL(`${process.env.NEXT_PUBLIC_URL}/api/login?useSessionCookies=true`)
 			const response = await fetch(url, {
 				method: "POST",
 				headers: {
@@ -69,11 +67,8 @@ export function SignInForm({ setFormType }: Props) {
 			console.error(error)
 			toast.error(error.message, { description: error.code })
 		},
-		// onSettled: () => {
-		// 	//setVisible(false)
-		// 	console.log("settled")
-		// },
 		onSuccess: (body: any) => {
+			queryClient.invalidateQueries({ queryKey: ["user"] })
 			toast.success(body.message)
 			router.push("/")
 		},
