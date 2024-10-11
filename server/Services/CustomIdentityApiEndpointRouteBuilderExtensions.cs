@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Http.Metadata;
@@ -62,7 +63,7 @@ public static class CustomIdentityApiEndpointRouteBuilderExtensions {
             return TypedResults.Ok(response);
         });
 
-        routeGroup.MapPost("/login", async Task<Results<Ok<AccessTokenResponse>, EmptyHttpResult, ProblemHttpResult>>
+        routeGroup.MapPost("/login", async Task<Results<Ok<LoginResponse>, EmptyHttpResult, ProblemHttpResult>>
             ([FromBody] CustomLoginRequest login, [FromQuery] bool? useCookies, [FromQuery] bool? useSessionCookies, [FromServices] IServiceProvider sp) =>
         {
             var signInManager = sp.GetRequiredService<SignInManager<TUser>>();
@@ -90,29 +91,60 @@ public static class CustomIdentityApiEndpointRouteBuilderExtensions {
                 return TypedResults.Problem(result.ToString(), statusCode: StatusCodes.Status401Unauthorized);
             }
 
+            var response = new LoginResponse {
+                Message = "user login successful"
+            };
+
             // The signInManager already produced the needed response in the form of a cookie or bearer token.
-            return TypedResults.Empty;
+            return TypedResults.Ok(response);
         });
 
-        routeGroup.MapPost("/refresh", async Task<Results<Ok<AccessTokenResponse>, UnauthorizedHttpResult, SignInHttpResult, ChallengeHttpResult>>
-            ([FromBody] RefreshRequest refreshRequest, [FromServices] IServiceProvider sp) =>
+        routeGroup.MapPost("/logout", async Task<Results<Ok<LogoutResponse>, EmptyHttpResult, ProblemHttpResult>>
+            ([FromQuery] bool? useCookies, [FromQuery] bool? useSessionCookies, [FromServices] IServiceProvider sp, HttpContext httpContext) =>
         {
             var signInManager = sp.GetRequiredService<SignInManager<TUser>>();
-            var refreshTokenProtector = bearerTokenOptions.Get(IdentityConstants.BearerScheme).RefreshTokenProtector;
-            var refreshTicket = refreshTokenProtector.Unprotect(refreshRequest.RefreshToken);
 
-            // Reject the /refresh attempt with a 401 if the token expired or the security stamp validation fails
-            if (refreshTicket?.Properties?.ExpiresUtc is not { } expiresUtc ||
-                timeProvider.GetUtcNow() >= expiresUtc ||
-                await signInManager.ValidateSecurityStampAsync(refreshTicket.Principal) is not TUser user)
+            var useCookieScheme = (useCookies == true) || (useSessionCookies == true);
+            var isPersistent = (useCookies == true) && (useSessionCookies != true);
+            signInManager.AuthenticationScheme = useCookieScheme ? IdentityConstants.ApplicationScheme : IdentityConstants.BearerScheme;
 
+            try
             {
-                return TypedResults.Challenge();
-            }
+                await httpContext.SignOutAsync(signInManager.AuthenticationScheme).ConfigureAwait(false);
 
-            var newPrincipal = await signInManager.CreateUserPrincipalAsync(user);
-            return TypedResults.SignIn(newPrincipal, authenticationScheme: IdentityConstants.BearerScheme);
+                var response = new LogoutResponse
+                {
+                    Message = "User logout successful"
+                };
+
+                return TypedResults.Ok(response); // Return success response after sign out
+            }
+            catch (Exception ex)
+            {
+                // You can catch and return a problem response if needed
+                return TypedResults.Problem(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
         });
+
+        // routeGroup.MapPost("/refresh", async Task<Results<Ok<AccessTokenResponse>, UnauthorizedHttpResult, SignInHttpResult, ChallengeHttpResult>>
+        //     ([FromBody] RefreshRequest refreshRequest, [FromServices] IServiceProvider sp) =>
+        // {
+        //     var signInManager = sp.GetRequiredService<SignInManager<TUser>>();
+        //     var refreshTokenProtector = bearerTokenOptions.Get(IdentityConstants.BearerScheme).RefreshTokenProtector;
+        //     var refreshTicket = refreshTokenProtector.Unprotect(refreshRequest.RefreshToken);
+
+        //     // Reject the /refresh attempt with a 401 if the token expired or the security stamp validation fails
+        //     if (refreshTicket?.Properties?.ExpiresUtc is not { } expiresUtc ||
+        //         timeProvider.GetUtcNow() >= expiresUtc ||
+        //         await signInManager.ValidateSecurityStampAsync(refreshTicket.Principal) is not TUser user)
+
+        //     {
+        //         return TypedResults.Challenge();
+        //     }
+
+        //     var newPrincipal = await signInManager.CreateUserPrincipalAsync(user);
+        //     return TypedResults.SignIn(newPrincipal, authenticationScheme: IdentityConstants.BearerScheme);
+        // });
 
         // routeGroup.MapPost("/forgotPassword", async Task<Results<Ok, ValidationProblem>>
         //     ([FromBody] ForgotPasswordRequest resetRequest, [FromServices] IServiceProvider sp) =>
@@ -242,7 +274,7 @@ public static class CustomIdentityApiEndpointRouteBuilderExtensions {
             });
         });
 
-        accountGroup.MapGet("/info", async Task<Results<Ok<InfoResponse>, ValidationProblem, NotFound>>
+        accountGroup.MapGet("/info", async Task<Results<Ok<CustomInfoResponse>, ValidationProblem, NotFound>>
             (ClaimsPrincipal claimsPrincipal, [FromServices] IServiceProvider sp) =>
         {
             var userManager = sp.GetRequiredService<UserManager<TUser>>();
@@ -254,7 +286,7 @@ public static class CustomIdentityApiEndpointRouteBuilderExtensions {
             return TypedResults.Ok(await CreateInfoResponseAsync(user, userManager));
         });
 
-        accountGroup.MapPost("/info", async Task<Results<Ok<InfoResponse>, ValidationProblem, NotFound>>
+        accountGroup.MapPost("/info", async Task<Results<Ok<CustomInfoResponse>, ValidationProblem, NotFound>>
             (ClaimsPrincipal claimsPrincipal, [FromBody] InfoRequest infoRequest, HttpContext context, [FromServices] IServiceProvider sp) =>
         {
             var userManager = sp.GetRequiredService<UserManager<TUser>>();
@@ -332,13 +364,13 @@ public static class CustomIdentityApiEndpointRouteBuilderExtensions {
         return TypedResults.ValidationProblem(errorDictionary);
     }
 
-    private static async Task<InfoResponse> CreateInfoResponseAsync<TUser>(TUser user, UserManager<TUser> userManager)
+    private static async Task<CustomInfoResponse> CreateInfoResponseAsync<TUser>(TUser user, UserManager<TUser> userManager)
         where TUser : class
     {
         return new()
         {
-            Email = await userManager.GetEmailAsync(user) ?? throw new NotSupportedException("Users must have an email."),
-            IsEmailConfirmed = await userManager.IsEmailConfirmedAsync(user),
+            UserID = await userManager.GetUserIdAsync(user) ?? throw new NotSupportedException("no user id found"),
+            UserName = await userManager.GetUserNameAsync(user) ?? throw new NotSupportedException("no username found"),
         };
     }
 
