@@ -101,11 +101,11 @@ export default function RootLayout({
 	children: React.ReactNode
 }>) {
 	return (
-		<html className={`${AzeretMono.variable}`} lang="en">
+		<html className={`${AzeretMono.variable}`} lang="en" suppressHydrationWarning>
 			<Providers>
 				<body className="font-azeret-mono antialiased min-h-screen">
 					<Nav />
-					<main className="min-h-[calc(100vh-4rem)] flex flex-col items-center pt-6 p-2 md:p-12 md:pt-12 space-y-12 pb-12 w-full">
+					<main className="min-h-[calc(100vh-4rem)] flex flex-col items-center p-6 md:p-12 md:pt-12 space-y-12 pb-12 w-full">
 						{children}
 					</main>
 					<footer className="absolute bottom-0 flex flex-col md:flex-row justify-center items-center md:text-sm text-xs mb-4 px-2 w-full">
