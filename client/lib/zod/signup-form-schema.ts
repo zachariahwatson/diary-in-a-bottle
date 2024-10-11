@@ -15,6 +15,11 @@ export const signUpFormSchema = z
 			.refine((val) => val === true, {
 				message: "you must accept the terms and conditions.",
 			}),
+		acceptCredentialsSaved: z
+			.boolean({ required_error: "you must acknowledge that you've stored your credentials in a safe place." })
+			.refine((val) => val === true, {
+				message: "you must acknowledge that you've stored your credentials in a safe place.",
+			}),
 	})
 	.refine((data) => data.password === data.confirmPassword, {
 		message: "passwords don't match",
