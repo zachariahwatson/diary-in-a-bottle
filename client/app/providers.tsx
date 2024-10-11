@@ -1,7 +1,7 @@
 // In Next.js, this file would be called: app/providers.jsx
 "use client"
 
-import { Toaster } from "@/components/ui"
+import { Toaster, ThemeProvider } from "@/components/ui"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
 export default function Providers({ children }: { children: React.ReactNode }) {
@@ -13,7 +13,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 
 	return (
 		<QueryClientProvider client={queryClient}>
-			{children}
+			<ThemeProvider attribute="class" defaultTheme="light">
+				{children}
+			</ThemeProvider>
 			<Toaster
 				offset={84}
 				position="top-right"
