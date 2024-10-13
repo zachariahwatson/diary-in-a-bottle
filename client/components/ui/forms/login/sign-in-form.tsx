@@ -12,6 +12,9 @@ import { Dispatch, SetStateAction } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { handleAuthApiError } from "@/utils"
+import type { AuthApiError as AuthApiErrorType } from "@/lib/types"
+import { AuthApiError } from "@/utils/errors"
 
 interface Props {
 	setFormType: Dispatch<SetStateAction<string | undefined>>
@@ -57,15 +60,15 @@ export function SignInForm({ setFormType }: Props) {
 				body: JSON.stringify(data),
 			})
 			if (!response.ok) {
-				const body = await response.json()
-				throw new Error(JSON.stringify(body, null, 2))
+				const body: AuthApiErrorType = await response.json()
+				throw new AuthApiError(body)
 			}
 
 			return await response.json()
 		},
-		onError: (error: any) => {
+		onError: (error: AuthApiErrorType) => {
 			console.error(error)
-			toast.error(error.message, { description: error.code })
+			handleAuthApiError(error)
 		},
 		onSuccess: (body: any) => {
 			queryClient.invalidateQueries({ queryKey: ["user"] })
@@ -81,50 +84,36 @@ export function SignInForm({ setFormType }: Props) {
 			</h3>
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 flex justify-center flex-col">
-					<div>
-						<FormField
-							control={form.control}
-							name="userName"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>username</FormLabel>
-									<FormControl>
-										<Input {...field} />
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name="password"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>password</FormLabel>
-									<FormControl>
-										<Input type="password" placeholder="••••••••" {...field} />
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-					</div>
+					<FormField
+						control={form.control}
+						name="userName"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>username</FormLabel>
+								<FormControl>
+									<Input {...field} />
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<FormField
+						control={form.control}
+						name="password"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>password</FormLabel>
+								<FormControl>
+									<Input type="password" placeholder="••••••••" {...field} />
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
 
-					<div>
-						<div className="flex flex-col items-end">
-							<SubmitButton className="w-full" pending={mutation.isPending} pendingText="signing in...">
-								sign in
-							</SubmitButton>
-							{/* <Button
-								onClick={handleResetFormChange}
-								variant="link"
-								className="text-md p-0 text-muted-foreground"
-								size="sm"
-							>
-								forgot password?
-							</Button> */}
-						</div>
-					</div>
+					<SubmitButton className="w-full" pending={mutation.isPending} pendingText="signing in...">
+						sign in
+					</SubmitButton>
 				</form>
 			</Form>
 			<div className="flex flex-row justify-center items-center">
