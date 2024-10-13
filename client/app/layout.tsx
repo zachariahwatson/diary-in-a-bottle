@@ -103,12 +103,12 @@ export default function RootLayout({
 	return (
 		<html className={`${AzeretMono.variable}`} lang="en" suppressHydrationWarning>
 			<Providers>
-				<body className="font-azeret-mono antialiased min-h-screen">
+				<body className="font-azeret-mono antialiased min-h-screen flex flex-col grow">
 					<Nav />
-					<main className="min-h-[calc(100vh-4rem)] flex flex-col items-center p-6 md:p-12 md:pt-12 space-y-12 pb-12 w-full">
-						{children}
+					<main className="flex flex-col items-center p-6 md:p-12 md:pt-12 space-y-12 pb-12 w-full grow">
+						<div className="max-w-sm md:max-w-4xl w-full flex justify-center grow">{children}</div>
 					</main>
-					<footer className="absolute bottom-0 flex flex-col md:flex-row justify-center items-center md:text-sm text-xs mb-4 px-2 w-full">
+					<footer className="flex flex-col md:flex-row justify-center items-center md:text-sm text-xs mb-4 px-2 w-full shrink-0">
 						<span>© 2024 ❤️ Zachariah Watson </span>
 						<div>
 							<span className="ml-1">
