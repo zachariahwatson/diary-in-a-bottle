@@ -1,23 +1,14 @@
 "use client"
 
 import { Button, SubmitButton } from "@/components/ui/buttons"
-import {
-	Checkbox,
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-	Separator,
-	UserNameGenerator,
-} from "@/components/ui"
+import { Checkbox, UserNameGenerator } from "@/components/ui"
 import { signUpFormSchema } from "@/lib/zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/forms"
 import { Input } from "@/components/ui/input"
-import { Dispatch, SetStateAction, useState } from "react"
+import { Dispatch, SetStateAction } from "react"
 import Link from "next/link"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { generateUserName, handleAuthApiError } from "@/utils"
