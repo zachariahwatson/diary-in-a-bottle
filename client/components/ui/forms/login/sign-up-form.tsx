@@ -143,7 +143,7 @@ export function SignUpForm({ setFormType }: Props) {
 									<FormControl>
 										<Checkbox checked={field.value} onCheckedChange={field.onChange} />
 									</FormControl>
-									<FormLabel>credentials have been saved</FormLabel>
+									<FormLabel>credentials have been stored</FormLabel>
 								</div>
 								<FormDescription>
 									you acknowledge that we DO NOT support account recovery and that you have stored you username and
