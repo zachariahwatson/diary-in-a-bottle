@@ -91,7 +91,7 @@ export function SignInForm({ setFormType }: Props) {
 							<FormItem>
 								<FormLabel>username</FormLabel>
 								<FormControl>
-									<Input {...field} />
+									<Input {...field} showCharacterCount={false} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -104,7 +104,7 @@ export function SignInForm({ setFormType }: Props) {
 							<FormItem>
 								<FormLabel>password</FormLabel>
 								<FormControl>
-									<Input type="password" placeholder="••••••••" {...field} />
+									<Input type="password" placeholder="••••••••" {...field} showCharacterCount={false} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
