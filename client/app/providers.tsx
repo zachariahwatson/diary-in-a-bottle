@@ -17,63 +17,76 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 				{children}
 			</ThemeProvider>
 			<Toaster
-				offset={84}
+				offset={63}
 				position="top-right"
 				duration={2500}
 				visibleToasts={1}
 				toastOptions={{
-					className: "bg-background text-foreground border-border",
+					className: "bg-background text-foreground border-border font-azeret-mono",
 					descriptionClassName: "text-muted-foreground",
 				}}
 				icons={{
 					success: (
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
 							viewBox="0 0 24 24"
-							fill="currentColor"
+							strokeWidth={1.5}
+							stroke="currentColor"
 							className="size-5 text-emerald-500"
 						>
 							<path
-								fillRule="evenodd"
-								d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z"
-								clipRule="evenodd"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
 							/>
 						</svg>
 					),
 					info: (
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-5">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							viewBox="0 0 24 24"
+							strokeWidth={1.5}
+							stroke="currentColor"
+							className="size-5"
+						>
 							<path
-								fillRule="evenodd"
-								d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34l.041-.022ZM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"
-								clipRule="evenodd"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
 							/>
 						</svg>
 					),
 					warning: (
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
 							viewBox="0 0 24 24"
-							fill="currentColor"
+							strokeWidth={1.5}
+							stroke="currentColor"
 							className="size-5 text-amber-400"
 						>
 							<path
-								fillRule="evenodd"
-								d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"
-								clipRule="evenodd"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
 							/>
 						</svg>
 					),
 					error: (
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
 							viewBox="0 0 24 24"
-							fill="currentColor"
+							strokeWidth={1.5}
+							stroke="currentColor"
 							className="size-5 text-red-500"
 						>
 							<path
-								fillRule="evenodd"
-								d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"
-								clipRule="evenodd"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"
 							/>
 						</svg>
 					),
