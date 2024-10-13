@@ -24,7 +24,7 @@ const AzeretMono = localFont({
 export const metadata: Metadata = {
 	metadataBase: new URL(process.env.NEXT_PUBLIC_URL || ""),
 	title: "diary in a bottle",
-	description: "anonymous diaries",
+	description: "be seen by the unheard.",
 	applicationName: "diary in a bottle",
 	// keywords: [
 	// 	"thispage",
