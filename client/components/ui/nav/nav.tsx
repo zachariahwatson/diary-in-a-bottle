@@ -62,7 +62,7 @@ export function Nav() {
 	})
 
 	return (
-		<nav className="flex justify-center h-16 sticky top-0 border-b">
+		<nav className="flex justify-center h-16 sticky top-0 border-b shrink-0 z-10 bg-background">
 			<div className="px-6 md:px-8 py-4 flex flex-row items-center w-full justify-between max-w-5xl">
 				<Link href="/">diary in a bottle</Link>
 				{user ? (
