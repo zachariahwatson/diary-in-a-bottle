@@ -1,7 +1,16 @@
 "use client"
 
 import { Button, SubmitButton } from "@/components/ui/buttons"
-import { Checkbox, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Separator } from "@/components/ui"
+import {
+	Checkbox,
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+	Separator,
+	UserNameGenerator,
+} from "@/components/ui"
 import { signUpFormSchema } from "@/lib/zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -28,17 +37,10 @@ type SignUpPayload = {
 export function SignUpForm({ setFormType }: Props) {
 	const queryClient = useQueryClient()
 
-	const [delimiter, setDelimiter] = useState<string>("-")
-	const [userNameSeed, setUserNameSeed] = useState<{ adj1: number; adj2: number; noun: number }>({
-		adj1: Math.random(),
-		adj2: Math.random(),
-		noun: Math.random(),
-	})
-
 	const form = useForm<z.infer<typeof signUpFormSchema>>({
 		resolver: zodResolver(signUpFormSchema),
 		defaultValues: {
-			userName: generateUserName(userNameSeed, delimiter),
+			userName: generateUserName(),
 			password: "",
 			confirmPassword: "",
 			acceptTerms: false,
@@ -55,24 +57,6 @@ export function SignUpForm({ setFormType }: Props) {
 
 	const handleFormChange = () => {
 		setFormType("signin")
-	}
-
-	const handleRegenerateUserName = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-		e.preventDefault()
-		const newUserNameSeed = {
-			adj1: Math.random(),
-			adj2: Math.random(),
-			noun: Math.random(),
-		}
-		setUserNameSeed(newUserNameSeed)
-		const newUserName = generateUserName(newUserNameSeed, delimiter)
-		form.setValue("userName", newUserName)
-	}
-
-	const handleDelimiter = (value: string) => {
-		setDelimiter(value)
-		const newUserName = generateUserName(userNameSeed, value)
-		form.setValue("userName", newUserName)
 	}
 
 	const mutation = useMutation({
@@ -118,51 +102,7 @@ export function SignUpForm({ setFormType }: Props) {
 							<FormItem>
 								<FormLabel>username</FormLabel>
 								<FormControl>
-									<div className="flex flex-row space-x-2">
-										<Input {...field} readOnly disabled />
-										<Select onValueChange={handleDelimiter} defaultValue="-">
-											<SelectTrigger className="w-32">
-												<SelectValue placeholder="-" />
-											</SelectTrigger>
-											<SelectContent>
-												<SelectItem value="none">none</SelectItem>
-												<SelectItem value="-">-</SelectItem>
-												<SelectItem value="_">_</SelectItem>
-												<SelectItem value="+">+</SelectItem>
-												<SelectItem value=">">{">"}</SelectItem>
-												<SelectItem value="?">?</SelectItem>
-												<SelectItem value="/">/</SelectItem>
-												<SelectItem value="\">\</SelectItem>
-												<SelectItem value="|">|</SelectItem>
-												<SelectItem value=":">:</SelectItem>
-												<SelectItem value=";">;</SelectItem>
-												<SelectItem value="!">!</SelectItem>
-												<SelectItem value="@">@</SelectItem>
-												<SelectItem value="#">#</SelectItem>
-												<SelectItem value="$">$</SelectItem>
-												<SelectItem value="%">%</SelectItem>
-												<SelectItem value="^">^</SelectItem>
-												<SelectItem value="&">&</SelectItem>
-												<SelectItem value="*">*</SelectItem>
-											</SelectContent>
-										</Select>
-										<Button onClick={handleRegenerateUserName}>
-											<svg
-												xmlns="http://www.w3.org/2000/svg"
-												fill="none"
-												viewBox="0 0 24 24"
-												strokeWidth={1.5}
-												stroke="currentColor"
-												className="size-6"
-											>
-												<path
-													strokeLinecap="round"
-													strokeLinejoin="round"
-													d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
-												/>
-											</svg>
-										</Button>
-									</div>
+									<UserNameGenerator {...field} />
 								</FormControl>
 							</FormItem>
 						)}

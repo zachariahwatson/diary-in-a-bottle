@@ -1,11 +1,11 @@
 export function generateUserName(
-	userNameSeed: { adj1: number; adj2: number; noun: number },
-	delimiter: string
+	userNameSeed?: { adj1: number; adj2: number; noun: number },
+	delimiter?: string
 ): string {
-	const d = delimiter === "none" ? "" : delimiter
-	const adj1 = randomItem(adjectives, userNameSeed.adj1)
-	const adj2 = randomItem(adjectives, userNameSeed.adj2)
-	const noun = randomItem(nouns, userNameSeed.noun)
+	const d = delimiter === "none" ? "" : delimiter ?? "-"
+	const adj1 = randomItem(adjectives, userNameSeed?.adj1 ?? Math.random())
+	const adj2 = randomItem(adjectives, userNameSeed?.adj2 ?? Math.random())
+	const noun = randomItem(nouns, userNameSeed?.noun ?? Math.random())
 	return adj1 + d + adj2 + d + noun
 }
 

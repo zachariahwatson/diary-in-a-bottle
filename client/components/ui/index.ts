@@ -36,3 +36,4 @@ export {
 export { ThemeProvider } from "./theme-provider"
 export { Switch } from "./switch"
 export { RadioGroup, RadioGroupItem } from "./radio-group"
+export { UserNameGenerator } from "./username-generator"
